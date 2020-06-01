@@ -45,7 +45,7 @@ void UpdateWin::clickButtonApply()
     int sum = editSum->text().toInt();
     sum = combobox->currentIndex() == 0?sum*=-1:sum;
 
-    if (db->updateDepositorsSum(id, sum)){
+    if (db->updateDepositorsSum(id, sum, sum > 0?1:0)){
         this->close();
         emit updateInfo();
     }

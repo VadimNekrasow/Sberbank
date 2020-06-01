@@ -3,6 +3,8 @@
 Window::Window()
 {
 
+   //ыsetStyleSheet("background-color: green;");
+
    this->setCurrentIndex(0);
    this->setMinimumSize(360, 240);
 
@@ -36,7 +38,7 @@ Window::Window()
    vboxMainStacked1->addWidget(treeWidgetDepositors);
 
    comboboxType = new QComboBox();
-   comboboxType->addItem("Без процентный");
+   comboboxType->addItem("Беспроцентный");
    comboboxType->addItem("Депозит");
 
    editPassport = new QLineEdit();
@@ -103,14 +105,17 @@ void Window::selectData()
         item->setText(0, query.value(1).toString());
         item->setText(1, query.value(2).toString());
         item->setText(2, query.value(3).toString());
-        item->setText(3, query.value(4).toString());
+        item->setText(3, QString::number(query.value(4).toDouble(), 'g', 10));
         item->setText(4, query.value(5).toString());
     }
+    buttonUpdate->setDisabled(true);
+    buttonDetailed->setDisabled(true);
+    currentItemID = -1;
 }
 
 void Window::clickButtonUpdate()
 {
-    int _id = currentItem;
+    int _id = currentItemID;
     UpdateWin *window = new UpdateWin(_id, &database);
     window->connect(window, &UpdateWin::updateInfo, this, &Window::selectData);
     window->show();
@@ -118,7 +123,7 @@ void Window::clickButtonUpdate()
 
 void Window::selectItemTreeWidget()
 {
-    currentItem = treeWidgetDepositors->currentItem()->data(0, 0).toInt();
+    currentItemID = treeWidgetDepositors->currentItem()->data(0, 0).toInt();
     buttonUpdate->setDisabled(false);
     buttonDetailed->setDisabled(false);
 }
@@ -155,7 +160,7 @@ void Window::clickButtonCancel()
 
 void Window::clickButtonDetailed()
 {
-    if (currentItem != -1){
+    if (currentItemID != -1){
         this->setCurrentIndex(2);
         selectDetailedInfo();
     }
@@ -165,7 +170,7 @@ void Window::selectDetailedInfo()
 {
     treewidgetDetail->clear();
     QSqlQuery query = QSqlQuery();
-    query.prepare(QString("SELECT ID_DEPOSITOR, SUM, TYPE_OPERATION, DATE FROM operations WHERE ID_DEPOSITOR = %1 ;").arg(currentItem));
+    query.prepare(QString("SELECT ID_DEPOSITOR, SUM, TYPE_OPERATION, DATE FROM operations WHERE ID_DEPOSITOR = %1 ;").arg(currentItemID));
     query.exec();
     while (query.next()){
         QTreeWidgetItem *item = new QTreeWidgetItem(treewidgetDetail);

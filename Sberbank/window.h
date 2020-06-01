@@ -20,7 +20,7 @@ private:
     QPushButton *buttonUpdate;
     QPushButton *buttonDetailed;
     QTreeWidget *treeWidgetDepositors;
-    int currentItem = -1;
+    int currentItemID = -1;
 
     QComboBox *comboboxType;
     QLineEdit *editPassport;
